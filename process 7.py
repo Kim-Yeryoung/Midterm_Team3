@@ -2,6 +2,8 @@
 ## 날짜 데이터 변환
 ## 수치형 데이터 변환
 ## 이상값 처리 (예: 'ERROR' → NaN)
+import pandas as pd
+import numpy as np
 
 def preprocess_transactions(df):
     # 1. 이상값 제거 (예: 'ERROR' → NaN)
