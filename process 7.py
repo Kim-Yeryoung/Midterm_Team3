@@ -26,3 +26,24 @@ def preprocess_transactions(df):
     df_cleaned = df.dropna(subset=cols_to_check)
 
     return df
+
+# 이상치 제거 및 전처리 함수 호출
+def remove_outliers_iqr(df, columns):
+    df_filtered = df.copy()
+    for col in columns:
+        q1 = df_filtered[col].quantile(0.25)
+        q3 = df_filtered[col].quantile(0.75)
+        iqr = q3 - q1
+        lower = q1 - 1.5 * iqr
+        upper = q3 + 1.5 * iqr
+        df_filtered = df_filtered[(df_filtered[col] >= lower) & (df_filtered[col] <= upper)]
+    return df_filtered
+
+# 적용 대상 수치형 컬럼
+numeric_cols = ['Quantity', 'Price Per Unit', 'Total Spent']
+
+# 이상치 제거 실행
+df_no_outliers = remove_outliers_iqr(df, numeric_cols)
+
+# 결과 확인
+df_no_outliers
