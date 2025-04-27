@@ -1,9 +1,11 @@
 ## 중복제거 및 결측치 처리
 ## 날짜 데이터 변환
 ## 수치형 데이터 변환
-## 이상값 처리 (예: 'ERROR' → NaN)
+
 import pandas as pd
 import numpy as np
+from scipy import stats
+
 
 def full_preprocess(df):
     df = df.copy()
@@ -35,24 +37,44 @@ def full_preprocess(df):
         upper = q3 + 1.5 * iqr
         df = df[(df[col] >= lower) & (df[col] <= upper)]
 
-    # 7. 이진화
-    if '장애인 채용 여부' in df.columns:
-        df['장애인 채용 여부'] = df['장애인 채용 여부'].map({'Y': 1, 'N': 0})
+    #6. 이상치 제거 (z-score 방식)
+    z_scores = np.abs(stats.zscore(df[numeric_cols]))    
+    df = df[(z_scores < 3).all(axis=1)]
 
-    # 8. 소재지 분리
+    # 7. 이진화
+    if 'colunm name' in df.columns:
+        df['colunm name'] = df['colunm name'].map({'Y': 1, 'N': 0})
+
+    ## 8. 소재지 분리
     def extract_region_parts(addr):
-        if pd.isna(addr):
+        if pd.isna(addr) or str(addr).strip() == "":
             return pd.NA, pd.NA, pd.NA
-        parts = addr.split()
+
+        parts = str(addr).strip().split()
+        
         if len(parts) >= 3:
             sido = parts[0]
             sigungu = parts[1]
             rest = ' '.join(parts[2:])
-            return sido, sigungu, rest
+        elif len(parts) == 2:
+            sido = parts[0]
+            sigungu = parts[1]
+            rest = pd.NA
+        elif len(parts) == 1:
+            sido = parts[0]
+            sigungu = pd.NA
+            rest = pd.NA
         else:
-            return pd.NA, pd.NA, addr
+            sido, sigungu, rest = pd.NA, pd.NA, pd.NA
 
-    if '소재지' in df.columns:
+        return sido, sigungu, rest
+
+    if 'colunm name' in df.columns:
         df[['시도', '시군구', '상세주소']] = df['소재지'].apply(lambda x: pd.Series(extract_region_parts(x)))
+
+    # 9. 원핫인코딩
+    if 'Colunm name' in df.columns:
+        df = pd.get_dummies(df, columns=['colunm name'], dummy_na=True)
+
 
     return df
