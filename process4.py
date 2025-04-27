@@ -1,14 +1,14 @@
 import pandas as pd
 
 def preprocess_disabled_companies(df):
-    # 1. 컬럼명 정리 (공백 제거)
+    # 컬럼명 정리 (공백 제거)
     df.columns = df.columns.str.strip()
 
-    # 2. 기업명/업종 중복 제거
+    # 기업명/업종 중복 제거
     df = df.drop_duplicates(subset=['업체명', '주업종','사업자등록번호' ])
 
 
-    # 4. 장애인 채용 여부 이진화
+    # 장애인 채용 여부 이진화
     if '장애인 채용 여부' in df.columns:
         df['장애인 채용 여부'] = df['장애인 채용 여부'].map({'Y': 1, 'N': 0})
     
