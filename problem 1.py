@@ -32,3 +32,5 @@ df=preprocessor(df)
 df
 
 df.to_csv('processed_df.csv')
+
+print('hi')
