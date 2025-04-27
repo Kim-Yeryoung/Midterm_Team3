@@ -5,10 +5,11 @@
 import pandas as pd
 import numpy as np
 
-def preprocess_transactions(df):
-    # 1. 이상값 제거 (예: 'ERROR' → NaN)
-    df.replace('ERROR', pd.NA, inplace=True)
-    df.replace('UNKNOWN', pd.NA, inplace=True)
+def full_preprocess(df):
+    df = df.copy()
+
+    # 1. 이상값 제거 ('ERROR', 'UNKNOWN' → NaN)
+    df.replace(['ERROR', 'UNKNOWN'], pd.NA, inplace=True)
 
     # 2. 수치형 변환
     for col in ['Quantity', 'Price Per Unit', 'Total Spent']:
@@ -18,32 +19,40 @@ def preprocess_transactions(df):
     df['Transaction Date'] = pd.to_datetime(df['Transaction Date'], errors='coerce')
 
     # 4. 중복 제거
-    df = df.drop_duplicates(subset='Transaction ID')
+    df = df.drop_duplicates(subset=['업체명', '주업종', '사업자등록번호'])
 
-    #특정행 결측치 제거
-    #해당 리스트에 컬럼명 작성
+    # 5. 특정 컬럼 결측치 제거
     cols_to_check = ['Item', 'Quantity', 'Price Per Unit', 'Total Spent', 'Payment Method', 'Location']
-    df_cleaned = df.dropna(subset=cols_to_check)
+    df = df.dropna(subset=cols_to_check)
 
-    return df
-
-# 이상치 제거 및 전처리 함수 호출
-def remove_outliers_iqr(df, columns):
-    df_filtered = df.copy()
-    for col in columns:
-        q1 = df_filtered[col].quantile(0.25)
-        q3 = df_filtered[col].quantile(0.75)
+    # 6. 이상치 제거 (IQR 방식)
+    numeric_cols = ['Quantity', 'Price Per Unit', 'Total Spent']
+    for col in numeric_cols:
+        q1 = df[col].quantile(0.25)
+        q3 = df[col].quantile(0.75)
         iqr = q3 - q1
         lower = q1 - 1.5 * iqr
         upper = q3 + 1.5 * iqr
-        df_filtered = df_filtered[(df_filtered[col] >= lower) & (df_filtered[col] <= upper)]
-    return df_filtered
+        df = df[(df[col] >= lower) & (df[col] <= upper)]
 
-# 적용 대상 수치형 컬럼
-numeric_cols = ['Quantity', 'Price Per Unit', 'Total Spent']
+    # 7. 이진화
+    if '장애인 채용 여부' in df.columns:
+        df['장애인 채용 여부'] = df['장애인 채용 여부'].map({'Y': 1, 'N': 0})
 
-# 이상치 제거 실행
-df_no_outliers = remove_outliers_iqr(df, numeric_cols)
+    # 8. 소재지 분리
+    def extract_region_parts(addr):
+        if pd.isna(addr):
+            return pd.NA, pd.NA, pd.NA
+        parts = addr.split()
+        if len(parts) >= 3:
+            sido = parts[0]
+            sigungu = parts[1]
+            rest = ' '.join(parts[2:])
+            return sido, sigungu, rest
+        else:
+            return pd.NA, pd.NA, addr
 
-# 결과 확인
-df_no_outliers
+    if '소재지' in df.columns:
+        df[['시도', '시군구', '상세주소']] = df['소재지'].apply(lambda x: pd.Series(extract_region_parts(x)))
+
+    return df
