@@ -26,6 +26,9 @@ def full_preprocess(df):
     # 5. 특정 컬럼 결측치 제거
     cols_to_check = ['Item', 'Quantity', 'Price Per Unit', 'Total Spent', 'Payment Method', 'Location']
     df = df.dropna(subset=cols_to_check)
+    # 5. 특정 컬럼 결측치 대체  (평균, 중앙값 등으로 대체)
+    df['colmun name'] = df['column name'].fillna(df['colmun name'].median())
+
 
     # 6. 이상치 제거 (IQR 방식)
     numeric_cols = ['Quantity', 'Price Per Unit', 'Total Spent']
@@ -42,10 +45,10 @@ def full_preprocess(df):
     df = df[(z_scores < 3).all(axis=1)]
 
     # 7. 이진화
-    if 'colunm name' in df.columns:
-        df['colunm name'] = df['colunm name'].map({'Y': 1, 'N': 0})
+    if 'column name' in df.columns:
+        df['column name'] = df['column name'].map({'Y': 1, 'N': 0})
 
-    ## 8. 소재지 분리
+    ## 8. 지역 분리
     def extract_region_parts(addr):
         if pd.isna(addr) or str(addr).strip() == "":
             return pd.NA, pd.NA, pd.NA
@@ -69,11 +72,11 @@ def full_preprocess(df):
 
         return sido, sigungu, rest
 
-    if 'colunm name' in df.columns:
+    if 'column name' in df.columns:
         df[['시도', '시군구', '상세주소']] = df['소재지'].apply(lambda x: pd.Series(extract_region_parts(x)))
 
     # 9. 원핫인코딩
-    if 'Colunm name' in df.columns:
+    if 'Column name' in df.columns:
         df = pd.get_dummies(df, columns=['colunm name'], dummy_na=True)
 
 
