@@ -16,12 +16,18 @@ def prepro3(input_file):
     df['name'] = df['name'].fillna(df.groupby('id')['name'].transform('first'))
     df['host_name'] = df['host_name'].fillna(df.groupby('id')['host_name'].transform('first'))
 
-    df['neighbourhood_group', 'neighbourhood'] = pd.get_dummies(df['neighbourhood_group', 'neighbourhood'])
+    df['neighbourhood_group'] = pd.get_dummies(df['neighbourhood_group'])
     df['room_type'] = df['room_type'].map({'Shared room': 1, 'Private room': 2, 'Entire home/apt': 3})
 
     scaler = MinMaxScaler()
     df['reserv_ava'] = scaler.fit_transform(df['availability_365'])
     df['profitability'] = df['price'] * df['minimum_nights'] * df['room_type']
+
+    group_profitability = df.groupby('neighbourhood_group')['profitability'].transform('mean')
+    group_availability = df.groupby('neighbourhood_group')['reserv_ava'].transform('mean')
+
+    df['group_profitability'] = group_profitability
+    df['group_reservation_success_rate'] = group_availability
 
     return 'result3.csv'
 
