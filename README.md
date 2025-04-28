@@ -12,7 +12,8 @@
 ##### 파생변수 생성: 나이를 30마다 구간을 나눠 카테고리화
 ##### 정규화: StandardScaler()를 사용하여 모든 컬럼에 대한 정규화 스케일링 실행
 
-보완점:
+#### 보완점:
+
 
 ## 문제 2번
 # 🏦 Credit Card Customer Data Preprocessing
