@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-HEAD
 from sklearn.preprocessing import StandardScaler, LabelEncoder  # 정규화 및 범주형 인코딩
 
 
