@@ -124,6 +124,8 @@ output_file = some_function(input_file)
 
 df.to_csv('output_file.csv')
 '''
+df = pd.read_csv(input_file)
+
 #1. 데이터 확인
 
 print(df.isnull().sum())
@@ -137,7 +139,7 @@ df = df.drop(columns=['sofifa_id', 'player_url', 'dob', 'real_face', 'joined', '
 
 
 
-#2. 처리할 컬럼 리스트
+# 처리할 컬럼 리스트
 position_cols = [
     'ls', 'st', 'rs', 'lw', 'lf', 'cf', 'rf', 'rw',
     'lam', 'cam', 'ram', 'lm', 'lcm', 'cm', 'rcm', 'rm',
@@ -148,22 +150,8 @@ position_cols = [
 for col in position_cols:
     df[col] = df[col].astype(str).str.split('+').str[0]  # +기준 분리해서 앞부분만
     df[col] = pd.to_numeric(df[col], errors='coerce')    # 숫자로 변환
-df.columns
 
-#3. 엔코딩(변수 분류): #성별 주의!
-
-label_encode_cols = [
-    'preferred_foot',
-    'nationality',
-    'club_name',
-    'league_name',
-    'body_type'
-]
-df[label_encode_cols]=encode_categoricals(df[label_encode_cols]) # Label
-
-#4-1. 정규화
-df[['training_hours']]=standard_numerics(df[['training_hours']])
-
+    
 #4-2. 표준화화
 inmax_cols = [
     'pace', 'shooting', 'passing', 'dribbling', 'defending', 'physic',
@@ -180,5 +168,26 @@ inmax_cols = [
     'lam', 'cam', 'ram', 'lm', 'lcm', 'cm', 'rcm', 'rm',
     'lwb', 'ldm', 'cdm', 'rdm', 'rwb', 'lb', 'lcb', 'cb', 'rcb', 'rb'
 ]
-df[['training_hours']]=normalize_numerics(df[['training_hours']])
+df[inmax_cols]=normalize_numerics(df[inmax_cols])
 
+
+# 변수 분류 (OneHot & gender or Label)
+label_encode_cols = []
+onehot_cols = []
+
+for col in df.columns:
+    if df[col].dtype == 'object' and col not in ['Gender', 'gender', 'Sex', 'sex']:
+        n_unique = df[col].nunique()
+        if n_unique > 2:
+            label_encode_cols.append(col)
+        elif n_unique == 2:
+            onehot_cols.append(col)
+
+label_encode_cols ,onehot_cols 
+
+
+#3. 엔코딩(변수 분류): #성별 주의!
+onehot_cols, label_encode_cols
+
+df[label_encode_cols]=encode_categoricals(df[label_encode_cols]) # Label
+df = pd.get_dummies(df, columns=onehot_cols ) #OneHot
