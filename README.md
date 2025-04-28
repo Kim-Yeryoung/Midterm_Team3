@@ -54,3 +54,111 @@ hihi
 9) One-hot Encoding: 자동 onehot encoding, Gender열도
 10) Age 정규화: Age열 minmax 정규화
 11) 저장: 최종 csv파일로 저장
+
+
+
+
+
+
+
+
+
+## 문제 6번
+# 🛒 Customer Segmentation Pipeline
+
+고객 구매 이력을 기반으로 RFM 분석(Recency, Frequency, Monetary)을 수행하고,  
+이를 통해 고객을 VIP, 일반(General), 휴면(Dormant) 그룹으로 분류하는 전체 파이프라인입니다.  
+추가적으로 머신러닝 모델 학습을 위한 데이터셋까지 준비할 수 있습니다.
+
+---
+
+## 📚 프로젝트 주요 목표
+
+- **구매 데이터 정제 및 전처리**  
+- **고객별 RFM 점수 계산 및 조합**
+- **VIP, 일반, 휴면 고객 세그먼트 분류**
+- **머신러닝 모델 학습용 데이터셋 자동 생성**
+
+---
+
+## 📁 파일 구성
+
+| 파일명 | 설명 |
+|:--|:--|
+| `full_preprocess_customer_segmentation(df)` | 구매 데이터 전처리 및 고객별 집계 |
+| `rfm_segmentation(customer_df)` | 고객별 RFM 점수 부여 |
+| `assign_customer_segment(customer_df)` | 고객 세그먼트 분류 |
+| `full_customer_segmentation_pipeline(df)` | 위 전체 과정을 통합한 파이프라인 |
+
+---
+
+## 🛠 주요 기능 상세 설명
+
+### 1. 데이터 전처리: `full_preprocess_customer_segmentation(df)`
+
+- **이상치 제거**: 수량(`Quantity`) 및 단가(`Price`)가 0 이하인 데이터 제거
+- **결측치 제거**: `Customer ID`가 없는 데이터 제거
+- **날짜 변환**: `InvoiceDate`를 `datetime` 타입으로 변환
+- **파생 변수 생성**:
+  - `Month`: 구매월
+  - `Weekday`: 구매 요일 (0=월요일, 6=일요일)
+  - `TotalPrice`: 구매수량 × 단가
+- **고객별 집계**:
+  - 가장 최근 구매일(`LastPurchaseDate`)
+  - 총 구매 건수(`PurchaseCount`)
+  - 총 구매 수량(`TotalQuantity`)
+  - 총 구매 금액(`TotalSpent`)
+- **Recency 계산**:
+  - 기준일(2011-12-10) 기준으로 마지막 구매일과의 차이(일수)
+
+---
+
+### 2. RFM 점수 부여: `rfm_segmentation(customer_df)`
+
+- **Recency(최근성)**:
+  - 최근에 구매했을수록 높은 점수(5점)
+- **Frequency(구매 빈도)**:
+  - 구매 횟수가 많을수록 높은 점수(5점)
+- **Monetary(구매 금액)**:
+  - 지출 금액이 클수록 높은 점수(5점)
+- **RFM_Score 조합**:
+  - R, F, M 점수를 문자열로 연결하여 `'545'`, `'212'` 등으로 저장
+
+---
+
+### 3. 고객 세그먼트 분류: `assign_customer_segment(customer_df)`
+
+- **VIP 고객**:
+  - RFM_Score가 '555', '554', '545', '544' 중 하나
+- **휴면 고객(Dormant)**:
+  - RFM_Score가 '111', '112', '121', '211', '212' 중 하나
+- **일반 고객(General)**:
+  - 나머지 고객
+
+---
+
+### 4. 전체 통합 파이프라인: `full_customer_segmentation_pipeline(df)`
+
+- 전처리 ➔ RFM 점수 부여 ➔ 세그먼트 분류를 한 번에 수행
+- 최종적으로 고객별 `CustomerID`, `RFM_Score`, `Segment` 정보를 포함하는 DataFrame 반환
+
+---
+
+## 🚀 실행 방법
+
+```python
+# 데이터 불러오기
+import pandas as pd
+df = pd.read_csv('your_data.csv')
+
+# 전체 파이프라인 실행
+segmented_customers = full_customer_segmentation_pipeline(df)
+
+# 결과 확인
+print(segmented_customers.head())
+
+
+---
+## 담당자
+
+곽주하(Gwak juha)
