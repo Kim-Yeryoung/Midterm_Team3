@@ -84,8 +84,22 @@ def some_function(input_file):
     df = df.drop_duplicates()
     df = df.drop(columns=['sofifa_id', 'player_url', 'dob', 'real_face', 'joined', 'contract_valid_until'])
     
-    # 2. 결측치 제거하려고 하였으나, df.isnull().sum()으로 중간에 생략된 부분을 본 결과 없는줄 알았다.
-    #따라서 결측치제거를 생략하였으나 오산이었다. 생략된 부분 속에 다량의 결측치가 숨겨져 있던 것이었다.
+    # 2-0. 결측치 제거하려고 하였으나, df.isnull().sum()으로 중간에 생략된 부분을 본 결과 없는줄 알았다.
+    #따라서 결측치제거를 생략하였으나 오산이었다. 생략된 부분 속에 다량의 결측치가 숨겨져 있던 것이었다. (아래 빼먹은 정의 함수들들)
+
+    '''
+    # 각 열별 결측 비율 계산
+    null_ratio = (df.isnull().sum() / len(df)) * 100
+
+    # 50% 이상 결측인 열만 골라서 삭제
+    df = df.drop(columns = null_ratio[null_ratio > 50].index)
+
+    #2-3. 결측치 제거(채우기기): 
+    df=handle_missing(df)
+
+    #2-4. outlier 제거(수치화):
+    df=remove_outliers(df)
+    '''
     
     #2-1. 포지션 관련 열: +기호 앞 숫자만 남기고 변환
     position_cols = [
