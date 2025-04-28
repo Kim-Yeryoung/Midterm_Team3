@@ -1,70 +1,46 @@
-## 중복제거 및 결측치 처리
-## 날짜 데이터 변환
-## 수치형 데이터 변환
-
 import pandas as pd
 import numpy as np
-from scipy import stats
 import re
-
 
 def full_preprocess(df):
     df = df.copy()
 
-    # 1. 이상값 제거 ('ERROR', 'UNKNOWN' → NaN)
-    df.replace(['ERROR', 'UNKNOWN'], pd.NA, inplace=True)
+    ## 1. AppointmentID 중복 제거
+    df = df.drop_duplicates(subset=['AppointmentID'])
 
-    # 2. 수치형 변환
-    for col in ['Quantity', 'Price Per Unit', 'Total Spent']:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
-
-    # 3. 날짜 변환
+    ## 2. 날짜 데이터 변환
+    df['ScheduledDay'] = pd.to_datetime(df['ScheduledDay'], errors='coerce')
     df['AppointmentDay'] = pd.to_datetime(df['AppointmentDay'], errors='coerce')
 
-    # 4. 중복 제거
-    df = df.drop_duplicates(subset=['업체명', '주업종', '사업자등록번호'])
+    ## 3. 수치형 데이터 변환 및 이상치 제거
+    df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
+    df = df[(df['Age'] >= 0) & (df['Age'] <= 100)]  # 나이 0~100 사이만
 
-    # 5. 특정 컬럼 결측치 제거
-    cols_to_check = ['Item', 'Quantity', 'Price Per Unit', 'Total Spent', 'Payment Method', 'Location']
-    df = df.dropna(subset=cols_to_check)
-    # 5. 특정 컬럼 결측치 대체  (평균, 중앙값 등으로 대체)
-    df['colmun name'] = df['column name'].fillna(df['colmun name'].median())
-
-
-
-    # 7. 이진화
+    ## 4. 이진화 (Label 및 Gender)
     if 'No-show' in df.columns:
-        df['No-show'] = df['No-show'].map({'Y': 1, 'N': 0})
+        df['No-show'] = df['No-show'].map({'No': 0, 'Yes': 1})  # 수정: Yes/No로
     if 'Gender' in df.columns:
-      df['Gender'] = df['Gender'].map({'M': 1, 'F': 0})
-
-
+        df['Gender'] = df['Gender'].map({'M': 1, 'F': 0})
 
     def preprocess_neighbourhood(df, rare_threshold=100):
         df = df.copy()
-        
-        # 1. 깨진 문자 정리 (영문, 숫자, 공백만 남기기)
+
         def clean_neighbourhood(text):
             if pd.isna(text):
                 return text
             return re.sub(r'[^A-Za-z0-9 ]+', '', text)
 
         df['Neighbourhood'] = df['Neighbourhood'].apply(clean_neighbourhood)
-        
-        # 2. 희귀 지역 통합 (rare → 'Other')
-        counts = df['Neighbourhood'].value_counts()
-        rare = counts[counts < rare_threshold].index
-        df['Neighbourhood'] = df['Neighbourhood'].replace(rare, 'Other')
 
-        # 3. One-hot encoding
-        df = pd.get_dummies(df, columns=['Neighbourhood'], dummy_na=True)
+        counts = df['Neighbourhood'].value_counts()
+        frequent_neighbourhoods = counts[counts >= rare_threshold].index
+
+        # 주요 지역이면 1, 나머지 rare 지역이면 0
+        df['Neighbourhood'] = df['Neighbourhood'].apply(lambda x: 1 if x in frequent_neighbourhoods else 0)
 
         return df
 
 
-    # 9. 원핫인코딩
-    if 'Column name' in df.columns:
-        df = pd.get_dummies(df, columns=['colunm name'], dummy_na=True)
-
+    df = preprocess_neighbourhood(df)  # 호출 필요!!!!
 
     return df
