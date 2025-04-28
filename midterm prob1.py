@@ -36,10 +36,15 @@ def remove_outliers(df):
 
 def encode_categoricals(df):
     cat_cols = df.select_dtypes(include=['object', 'category']).columns
-    print("Categorical columns identified:", cat_cols)
     for col in cat_cols:
         df[col] = LabelEncoder().fit_transform(df[col])
     return df
+
+def encode_categoricals_onehot(df):
+    if 'sex' in df.columns:
+        df = pd.get_dummies(df, columns=['sex'], drop_first=True)
+        df.rename(columns={'sex_1': 'sex(Male): 0', 'sex_2': 'sex(Female): 1'}, inplace=True)
+        return df
 
 def create_features(df):
     df['age_group'] = pd.cut(df['age'], bins=[0, 30, 60, 120], labels=['young', 'adult', 'senior'])
@@ -51,17 +56,23 @@ def normalize_numerics(df):
     df[num_cols] = scaler.fit_transform(df[num_cols])
     return df
 
-def preprocessing(df):
-    df = handle_missing(df)
-    df = remove_outliers(df)
-    df = create_features(df)
-    df = encode_categoricals(df)
-    df = normalize_numerics(df)
-    return df
+def preprocessing_with_target(df, target_col):
 
-df = preprocessing(df)
+    y = df[target_col]
+    X = df.drop(columns=[target_col])
+
+    X = handle_missing(df)
+    X = remove_outliers(df)
+    X = create_features(df)
+    X = encode_categoricals(df)
+    X = normalize_numerics(df)
+
+    # 3. X와 y 합치기
+    df_processed = pd.concat([X.reset_index(drop=True), y.reset_index(drop=True)], axis=1)
+    return df_processed
+
+df = preprocessing_with_target(df, 'income')
 df.to_csv('processed_1_adults.csv', index = False)
-
 
 
 
