@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import re
+import datetime
 
 # 1. 전처리 함수
 def full_preprocess_customer_segmentation(df):
@@ -38,33 +38,38 @@ def full_preprocess_customer_segmentation(df):
 
     return customer_df
 
+# 2. RFM 세분화 함수
+def rfm_segmentation(customer_df):
+    customer_df = customer_df.copy()
 
+    # RFM 점수 부여
+    customer_df['R_score'] = pd.qcut(customer_df['Recency'], 5, labels=[5,4,3,2,1]).astype(int)
+    customer_df['F_score'] = pd.qcut(customer_df['PurchaseCount'].rank(method='first'), 5, labels=[1,2,3,4,5]).astype(int)
+    customer_df['M_score'] = pd.qcut(customer_df['TotalSpent'].rank(method='first'), 5, labels=[1,2,3,4,5]).astype(int)
 
-    ## 4. 이진화 (Label 및 Gender)
-    if 'No-show' in df.columns:
-        df['No-show'] = df['No-show'].map({'No': 0, 'Yes': 1})  # 수정: Yes/No로
-    if 'Gender' in df.columns:
-        df['Gender'] = df['Gender'].map({'M': 1, 'F': 0})
+    # RFM 조합 점수
+    customer_df['RFM_Score'] = customer_df['R_score'].astype(str) + customer_df['F_score'].astype(str) + customer_df['M_score'].astype(str)
 
-    def preprocess_neighbourhood(df, rare_threshold=100):
-        df = df.copy()
+    return customer_df
 
-        def clean_neighbourhood(text):
-            if pd.isna(text):
-                return text
-            return re.sub(r'[^A-Za-z0-9 ]+', '', text)
+# 3. 고객 세분화 함수
+def assign_customer_segment(customer_df):
+    customer_df = customer_df.copy()
 
-        df['Neighbourhood'] = df['Neighbourhood'].apply(clean_neighbourhood)
+    def segment(row):
+        if row['RFM_Score'] in ['555', '554', '545', '544']:
+            return 'VIP'
+        elif row['RFM_Score'] in ['111', '112', '121', '211', '212']:
+            return 'Dormant'
+        else:
+            return 'General'
 
-        counts = df['Neighbourhood'].value_counts()
-        frequent_neighbourhoods = counts[counts >= rare_threshold].index
+    customer_df['Segment'] = customer_df.apply(segment, axis=1)
+    return customer_df
 
-        # 주요 지역이면 1, 나머지 rare 지역이면 0
-        df['Neighbourhood'] = df['Neighbourhood'].apply(lambda x: 1 if x in frequent_neighbourhoods else 0)
-
-        return df
-
-
-    df = preprocess_neighbourhood(df)  # 호출 필요!!!!
-
-    return df
+# 4. 전체 파이프라인
+def full_customer_segmentation_pipeline(df):
+    df_clean = full_preprocess_customer_segmentation(df)
+    df_rfm = rfm_segmentation(df_clean)
+    df_segmented = assign_customer_segment(df_rfm)
+    return df_segmented
