@@ -143,6 +143,98 @@ print(df_clean.head())
 ---
 
 ##5번 (김예령)
+FIFA 유망 선수 발굴 전처리 프로젝트
+-프로젝트 목적:
+ 1) FIFA 선수 데이터를 활용하여 유망 선수를 조기에 발굴하고
+ 2) 스카우팅 전략 최적화를 지원하기 위한 전처리 작업을 수행
+ 3) 선수 능력치 및 특성을 기반으로 높은 시장 가치를 가질 선수군을 예측할 수 있도록 데이터 준비 목표
+
+-데이터셋 정보
+파일명: 5_SOCCER.csv
+
+코드 설명:
+
+FIFA 게임에서 제공하는 선수 정보 데이터
+
+주요 컬럼:
+
+Overall (종합 능력치)
+
+Potential (성장 가능성)
+
+Club (소속 클럽)
+
+Value (시장가치)
+
+Wage (주급)
+
+Preferred Foot, Position 등
+
+🛠️ 전처리 작업
+-기본: 파일 불러오기 및 초기 확인
+
+1) 중복 제거 & 불필요한 열(sofifa_id, player_url, dob 등) 제거
+
+2-1) 포지션 관련 변수 정리
+-포지션 별 능력치에서 + 기호 앞 숫자만 추출하여 정수형으로 변환
+
+2-2)  결측치 처리를 일부로 했다가 함수를 지웠었다.  
+- 수치형 변수: 중앙값(Median) 대체
+- 범주형 변수: 최빈값(Mode) 대체
+
+4) 이상치 제거
+-수치형 컬럼에 대해 IQR 3배 기준으로 이상치 제거
+
+
+
+6) 변수 변환 및 인코딩
+-Label Encoding & One-Hot Encoding을 적절히 적용
+-수치형 변수 중 일부 능력치(pace, shooting 등)는 MinMaxScaler를 사용하여 0~1 정규화
+
+파생변수 생성
+
+age_category: 나이를 범주화 (young / prime / veteran)
+
+body_mass_index: BMI 지수 계산
+
+attacking_ability: 공격 관련 능력 평균
+
+defending_ability: 수비 관련 능력 평균
+
+value_to_wage_ratio: 시장가치 대비 주급 비율
+
+release_clause_ratio: 바이아웃 금액 대비 시장가치 비율
+
+annual_wage: 연봉 계산
+
+최종 파일 저장
+
+전처리 완료된 데이터를 output_file.csv로 저장
+
+📁 파일 구조
+bash
+복사
+편집
+├── 5_SOCCER.csv  # 원본 데이터
+├── output_file.csv  # 전처리 완료된 데이터
+├── README.md  # 프로젝트 설명 파일
+└── preprocessing_script.py  # (선택사항) 전처리 Python 코드 파일
+⚙️ 사용 방법
+python
+복사
+편집
+# 파일 실행 예시
+input_file = "C:/Users/kimye/Desktop/5_SOCCER.csv"
+output_file = some_function(input_file)
+output_file.to_csv('output_file.csv')
+✨ 참고 사항
+MinMaxScaler 및 StandardScaler는 필요에 따라 변경 가능하도록 함수화하였습니다.
+
+OneHotEncoder와 LabelEncoder 모두 자동 분류되며, 예외 발생 시 해시 값 인코딩을 적용합니다.
+
+포지션 스탯과 일반 수치형 변수는 별도로 정규화 전략을 적용하였습니다.
+
+\
 
 ---
 
