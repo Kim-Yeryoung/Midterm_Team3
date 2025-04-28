@@ -72,7 +72,7 @@ df = some_function(input_file)
 ## 문제 3번 (최지수)
 
 
-## 문제 4번 (곽주하하)
+## 문제 4번 (곽주하)
 # 🏥 Hospital Appointment Data Preprocessing
 
 고객 예약 데이터를 정제하고 머신러닝 분석에 최적화된 형태로 가공하는 전처리 파이프라인입니다.  
@@ -178,7 +178,7 @@ Preferred Foot, Position 등
 2-1) 포지션 관련 변수 정리
 -포지션 별 능력치에서 + 기호 앞 숫자만 추출하여 정수형으로 변환
 
-2-2)  결측치 처리를 일부로 했다가 함수를 지웠었다.  
+2-2)  결측치 처리 확인을 했을 때, 생략된 부분을 고려하지 못하여 결측치 대체 함수를 썼다가 지웠다. 이후에 전체 column으로 결측치를 확인하니 결측치가 있음을 봤다.   
 - 수치형 변수: 중앙값(Median) 대체
 - 범주형 변수: 최빈값(Mode) 대체
 
@@ -186,8 +186,7 @@ Preferred Foot, Position 등
 -수치형 컬럼에 대해 IQR 3배 기준으로 이상치 제거
 
 
-
-6) 변수 변환 및 인코딩
+5) 변수 변환 및 인코딩
 -Label Encoding & One-Hot Encoding을 적절히 적용
 -수치형 변수 중 일부 능력치(pace, shooting 등)는 MinMaxScaler를 사용하여 0~1 정규화
 
@@ -211,18 +210,9 @@ annual_wage: 연봉 계산
 
 전처리 완료된 데이터를 output_file.csv로 저장
 
-📁 파일 구조
-bash
-복사
-편집
-├── 5_SOCCER.csv  # 원본 데이터
-├── output_file.csv  # 전처리 완료된 데이터
-├── README.md  # 프로젝트 설명 파일
-└── preprocessing_script.py  # (선택사항) 전처리 Python 코드 파일
+
 ⚙️ 사용 방법
 python
-복사
-편집
 # 파일 실행 예시
 input_file = "C:/Users/kimye/Desktop/5_SOCCER.csv"
 output_file = some_function(input_file)
@@ -234,7 +224,6 @@ OneHotEncoder와 LabelEncoder 모두 자동 분류되며, 예외 발생 시 해�
 
 포지션 스탯과 일반 수치형 변수는 별도로 정규화 전략을 적용하였습니다.
 
-\
 
 ---
 
