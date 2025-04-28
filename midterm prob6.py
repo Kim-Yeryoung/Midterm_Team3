@@ -2,6 +2,10 @@ import pandas as pd
 import numpy as np
 import datetime
 
+input_file="6_shopping.csv"
+#csv파일 읽기
+df = pd.read_csv(input_file)
+
 # 1. 전처리 함수: 구매 데이터 전처리 후 고객별 집계
 def full_preprocess_customer_segmentation(df):
     df = df.copy()
@@ -74,8 +78,22 @@ def assign_customer_segment(customer_df):
     return customer_df
 
 # 4. 전체 파이프라인: 전처리 ➔ RFM 점수화 ➔ Segment 분류까지 통합 수행
-def full_customer_segmentation_pipeline(df):
+def some_function(input_file):
+    df = pd.read_csv(input_file)
     df_clean = full_preprocess_customer_segmentation(df)
     df_rfm = rfm_segmentation(df_clean)
     df_segmented = assign_customer_segment(df_rfm)
     return df_segmented
+
+
+  
+
+# 6. 함수 실행하여 전처리 결과 저장
+output_file = some_function(input_file) 
+
+
+# 7. 전처리 완료된 데이터 CSV 파일로 저장
+output_file.to_csv('output_file.csv')
+
+# 결과 확인
+output_file

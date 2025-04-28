@@ -2,8 +2,9 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, LabelEncoder  # 정규화 및 범주형 인코딩
 
+input_file="7_heart.csv"
 #csv 파일 열기
-df = pd.read_csv("7_heart.csv")
+df = pd.read_csv(input_file)
 print(df.info())
 print(df.describe())
 print(df.head(5))
@@ -53,12 +54,13 @@ def normalize_numerics(df):
     return df
 
 #전처리 파이프라인 실행. 모든 컬럼에 대해 전처리 실행
-def preprocessing(df):
+def some_function(input_file):
+    df = pd.read_csv(input_file)
     df = remove_outliers(df)
     df = create_features(df)
     df = normalize_numerics(df)
     return df
 
-df = preprocessing(df)
-df.to_csv('processed_7_heart.csv', index = False)
+output_file = some_function(input_file)
+output_file.to_csv('output_file.csv', index = False)
 print(df.info())

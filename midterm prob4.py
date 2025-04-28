@@ -2,7 +2,11 @@ import pandas as pd
 import numpy as np
 import re
 
-def full_preprocess(df):
+input_file='4_MED_NS.csv'
+
+
+def some_function(input_file):
+    df=pd.read_csv(input_file)
     df = df.copy()
 
     # 1. AppointmentID 중복 제거 (예약 건별 데이터가 중복될 경우 하나만 남긴다)
@@ -52,6 +56,16 @@ def full_preprocess(df):
         return df
 
     # 지역 컬럼 전처리 실행
-    df = preprocess_neighbourhood(df) 
+    df = some_function(input_file) 
+
 
     return df
+# 6. 함수 실행하여 전처리 결과 저장
+output_file = some_function(input_file) 
+
+
+# 7. 전처리 완료된 데이터 CSV 파일로 저장
+output_file.to_csv('output_file.csv')
+
+# 결과 확인
+output_file
