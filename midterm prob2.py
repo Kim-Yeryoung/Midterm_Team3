@@ -83,5 +83,46 @@ def some_function(input_file):
     return df
 
 
-df
+
+#1. 데이터 확인
+print(df.info())
+print(df.isnull().sum())
+#2-1 각 열별 결측 비율 계산
+null_ratio = (df.isnull().sum() / len(df)) * 100
+
+# 50% 이상 결측인 열만 골라서 삭제
+df = df.drop(columns = null_ratio[null_ratio > 50].index)
+
+#2-2. 중복 제거
+df.duplicated()
+df = df.drop_duplicates(subset=['업체명', '주업종', '사업자등록번호'])
+
+df.columns
+df = df.drop(columns=['Transaction Date'])
+
+#2-3. 결측치 제거(채우기기): 
+df=handle_missing(df)
+
+#2-4. outlier 제거(수치화):
+df=remove_outliers(df)
+
+
+
+
+#3. 엔코딩(변수 분류): #성별 주의!
+onehot_cols, label_encode_cols
+
+df[label_encode_cols]=encode_categoricals(df[label_encode_cols]) # Label
+df = pd.get_dummies(df, columns=onehot_cols + ['gender']) #OneHot
+
+#4-1. 정규화
+df[['training_hours']]=standard_numerics(df[['training_hours']])
+
+#4-2. 표준화화
+df[['training_hours']]=normalize_numerics(df[['training_hours']])
+
+#5. 마지막: 파이프 라인 함수화 & 전처리 된 csv 파일 추출
+
+
+
 
