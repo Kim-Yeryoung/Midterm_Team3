@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 
 # 사용자 정의 함수 prepro -> 전체 전처리 과정 포괄
-def prepro3(input_file):
+def some_function(input_file):
 
     # 파일 읽고 df로 저장
     df_raw = pd.read_csv(input_file)
@@ -42,10 +42,10 @@ def prepro3(input_file):
     df['group_reservation_success_rate'] = group_availability
 
     # 파일 저장, 반환
-    df.to_csv('result3.csv')
-    return 'result3.csv'
+    df.to_csv('output_file.csv')
+    return df
 
 # 최종 파일 input, output
 input_file = "3_AB.csv"
-output_file = prepro3(input_file)
+output_file = some_function(input_file)
 
