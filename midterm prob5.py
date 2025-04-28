@@ -170,6 +170,6 @@ def some_function(input_file):
 
 output_file = some_function(input_file) 
 
-
+output_file.to_csv('output_file.csv')
 
 output_file
