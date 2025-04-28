@@ -115,11 +115,7 @@ onehot_cols, label_encode_cols
 df[label_encode_cols]=encode_categoricals(df[label_encode_cols]) # Label
 df = pd.get_dummies(df, columns=onehot_cols + ['gender']) #OneHot
 
-#4-1. 정규화
-df[['training_hours']]=standard_numerics(df[['training_hours']])
 
-#4-2. 표준화화
-df[['training_hours']]=normalize_numerics(df[['training_hours']])
 
 #5. 마지막: 파이프 라인 함수화 & 전처리 된 csv 파일 추출
 
