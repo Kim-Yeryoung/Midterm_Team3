@@ -59,9 +59,79 @@ hihi
 
 
 
+## 문제 4번
+# 🏥 Hospital Appointment Data Preprocessing
 
+고객 예약 데이터를 정제하고 머신러닝 분석에 최적화된 형태로 가공하는 전처리 파이프라인입니다.  
+특히, 예약 노쇼(No-show) 예측 모델 구축 및 데이터 탐색을 위한 사전 준비 작업에 최적화되어 있습니다.
 
+---
 
+## 📚 프로젝트 개요
+
+✅ **목적**  
+- 중복 데이터 제거
+- 날짜 데이터 표준화
+- 수치형 데이터 변환 및 이상치 제거
+- 범주형 데이터 이진화
+- 지역 정보 정제 및 희귀 지역 구분
+
+✅ **활용 예시**  
+- 환자 노쇼 예측 모델
+- 예약 패턴 분석
+- 환자 세분화 및 리텐션 전략 수립
+
+---
+
+## 🛠 기능 요약
+
+| 기능 | 상세 설명 |
+|:--|:--|
+| AppointmentID 중복 제거 | 예약 건별로 고유 데이터만 유지 |
+| 날짜 변환 | ScheduledDay, AppointmentDay를 `datetime` 타입으로 변환 |
+| 나이 데이터 클린징 | Age를 수치형으로 변환, 0~100세 사이만 유지 |
+| 방문 여부 이진화 | 'No-show'를 0(No), 1(Yes)로 변환 |
+| 성별 이진화 | 'Gender'를 0(F), 1(M)로 변환 |
+| 지역 데이터 정제 | 특수문자 제거 후, 주요 지역은 1, 희귀 지역은 0으로 이진화 |
+
+---
+
+## 📂 함수 설명
+
+### `full_preprocess(df)`
+
+> 입력된 예약 데이터프레임을 전처리하여, 머신러닝 분석용으로 가공된 데이터프레임을 반환합니다.
+
+- **중복 제거**: `AppointmentID` 기준 중복 제거
+- **날짜 변환**: `ScheduledDay`, `AppointmentDay`를 `datetime` 변환
+- **나이 필터링**: 0~100세 범위 외 데이터 제거
+- **'No-show' 이진화**: No=0, Yes=1
+- **'Gender' 이진화**: F=0, M=1
+- **Neighbourhood 전처리**:
+  - 특수문자 제거
+  - 등장 빈도 기준 주요 지역(1) vs 희귀 지역(0) 구분
+
+---
+
+## 🖥️ 코드 사용법
+
+```python
+import pandas as pd
+
+# 데이터 불러오기
+df = pd.read_csv('your_appointment_data.csv')
+
+# 전처리 함수 실행
+df_clean = full_preprocess(df)
+
+# 결과 확인
+print(df_clean.head())
+```
+---
+
+## 담당자 
+
+-곽주하(Gwak juha)
 
 ## 문제 6번
 # 🛒 Customer Segmentation Pipeline
@@ -72,7 +142,7 @@ hihi
 
 ---
 
-## 📚 프로젝트 주요 목표
+## 프로젝트 주요 목표
 
 - **구매 데이터 정제 및 전처리**  
 - **고객별 RFM 점수 계산 및 조합**
@@ -81,7 +151,7 @@ hihi
 
 ---
 
-## 📁 파일 구성
+## 파일 구성
 
 | 파일명 | 설명 |
 |:--|:--|
@@ -144,7 +214,7 @@ hihi
 
 ---
 
-## 🚀 실행 방법
+## 실행 방법
 
 ```python
 # 데이터 불러오기
@@ -156,7 +226,7 @@ segmented_customers = full_customer_segmentation_pipeline(df)
 
 # 결과 확인
 print(segmented_customers.head())
-
+```
 
 ---
 ## 담당자
