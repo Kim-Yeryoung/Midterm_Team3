@@ -20,7 +20,7 @@ def prepro3(input_file):
     
     # id열에서 name열에 결측치가 있을 때, id열의 값이 같은 다른 행의 name열 값을 가져다가 결측치 채움
     df['name'] = df['name'].fillna(df.groupby('id')['name'].transform('first'))
-    df['host_name'] = df['host_name'].fillna(df.groupby('id')['host_name'].transform('first'))
+    df['host_name'] = df['host_name'].fillna(df.groupby('host_id')['host_name'].transform('first'))
 
     # neighbourhood_group열 one-hot encoding
     df['neighbourhood_group'] = pd.get_dummies(df['neighbourhood_group'])
