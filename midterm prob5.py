@@ -136,6 +136,18 @@ df = df.drop_duplicates()
 df = df.drop(columns=['sofifa_id', 'player_url', 'dob', 'real_face', 'joined', 'contract_valid_until'])
 
 
+
+#2. 처리할 컬럼 리스트
+position_cols = [
+    'ls', 'st', 'rs', 'lw', 'lf', 'cf', 'rf', 'rw',
+    'lam', 'cam', 'ram', 'lm', 'lcm', 'cm', 'rcm', 'rm',
+    'lwb', 'ldm', 'cdm', 'rdm', 'rwb', 'lb', 'lcb', 'cb', 'rcb', 'rb'
+]
+
+# +를 기준으로 앞 숫자만 남기기
+for col in position_cols:
+    df[col] = df[col].astype(str).str.split('+').str[0]  # +기준 분리해서 앞부분만
+    df[col] = pd.to_numeric(df[col], errors='coerce')    # 숫자로 변환
 df.columns
 
 #3. 엔코딩(변수 분류): #성별 주의!
@@ -169,3 +181,4 @@ inmax_cols = [
     'lwb', 'ldm', 'cdm', 'rdm', 'rwb', 'lb', 'lcb', 'cb', 'rcb', 'rb'
 ]
 df[['training_hours']]=normalize_numerics(df[['training_hours']])
+
