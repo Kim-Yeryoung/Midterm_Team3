@@ -2,8 +2,9 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler, LabelEncoder  # 정규화 및 범주형 인코딩
 
+input_file="1_adults.csv"
 #csv파일 읽기
-df = pd.read_csv("1_adults.csv", encoding='cp949')
+df = pd.read_csv(input_file, encoding='cp949')
 print(df.info())
 
 #결측치 처리: ?로 처리 되어있는 데이터를 NaN값으로 변환
@@ -63,7 +64,7 @@ def normalize_numerics(df):
     return df
 
 #전처리 파이프라인 실행: 타겟 컬럼을 제외한 모든 컬럼에 대해 전처리 실행
-def preprocessing_with_target(df, target_col):
+def some_function(df, target_col):
     #1 target column과 그외 컬럼 분리
     y = df[target_col]
     X = df.drop(columns=[target_col])
@@ -78,9 +79,5 @@ def preprocessing_with_target(df, target_col):
     df_processed = pd.concat([X.reset_index(drop=True), y.reset_index(drop=True)], axis=1)
     return df_processed
 
-df = preprocessing_with_target(df, 'income')
-df.to_csv('processed_1_adults.csv', index = False)
-
-
-
-#
+output_file = some_function(df, 'income')
+df.to_csv('output_file.csv', index = False)
