@@ -4,6 +4,13 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 
 
+def handle_missing(df):
+    if df.dtype in ['float64', 'int64']:  # 수치형
+        df = df.fillna(df.median())
+    else:  # 범주형 또는 문자열
+        df = df.fillna(df.mode().iloc[0])
+    return df
+
 
 def prepro3(input_file):
 
@@ -11,12 +18,10 @@ def prepro3(input_file):
     df = df_raw.copy()
 
     #print(df['longitude'].value_counts())
-    null_ratio = (df.isnull().sum() / len(df)) * 100
-    print(null_ratio)
+    #null_ratio = (df.isnull().sum() / len(df)) * 100
     df['id'] = df['id'].drop_duplicates()
 
-
-
+    handle_missing(df)
 
 
     return 'result3.csv'
