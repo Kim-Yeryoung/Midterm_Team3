@@ -11,6 +11,7 @@ def prepro3(input_file):
 
     #print(df['longitude'].value_counts())
     #null_ratio = (df.isnull().sum() / len(df)) * 100
+    
     df['id'] = df['id'].drop_duplicates()
     
     df['name'] = df['name'].fillna(df.groupby('id')['name'].transform('first'))
