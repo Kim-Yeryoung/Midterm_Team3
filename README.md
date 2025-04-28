@@ -62,7 +62,7 @@ df = some_function(input_file)
 - 전처리와 저장까지 `some_function()` 안에서 모두 처리하거나,
 - 바깥에서 순서대로 직접 처리해야 합니다.
 
-
+```
 ## 문제 3번
 
 
