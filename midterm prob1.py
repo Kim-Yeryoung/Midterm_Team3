@@ -62,15 +62,6 @@ def preprocessing(df):
 
 df = preprocessing(df)
 df.to_csv('processed_1_adults.csv', index = False)
-print(df.info())
-
-from scipy.stats import zscore
-from sklearn.preprocessing import StandardScaler, LabelEncoder  # 정규화 및 범주형 인코딩
-
-def encode_categoricals(df_sub):
-    for col in df_sub.columns:
-        df_sub[col] = LabelEncoder().fit_transform(df_sub[col])
-    return df_sub
 
 
 
