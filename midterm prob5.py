@@ -84,7 +84,8 @@ def some_function(input_file):
     df = df.drop_duplicates()
     df = df.drop(columns=['sofifa_id', 'player_url', 'dob', 'real_face', 'joined', 'contract_valid_until'])
     
-
+    # 2. 결측치 제거하려고 하였으나, df.isnull().sum()으로 중간에 생략된 부분을 본 결과 없는줄 알았다.
+    #따라서 결측치제거를 생략하였으나 오산이었다. 생략된 부분 속에 다량의 결측치가 숨겨져 있던 것이었다.
     
     #2-1. 포지션 관련 열: +기호 앞 숫자만 남기고 변환
     position_cols = [
