@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+HEAD
 from sklearn.preprocessing import StandardScaler, LabelEncoder  # 정규화 및 범주형 인코딩
 
 
@@ -62,3 +63,40 @@ def preprocessing(df):
 df = preprocessing(df)
 df.to_csv('processed_1_adults.csv', index = False)
 print(df.info())
+
+from scipy.stats import zscore
+from sklearn.preprocessing import StandardScaler, LabelEncoder  # 정규화 및 범주형 인코딩
+
+def encode_categoricals(df_sub):
+    for col in df_sub.columns:
+        df_sub[col] = LabelEncoder().fit_transform(df_sub[col])
+    return df_sub
+
+
+
+df = pd.read_csv("/Users/yunachae/Downloads/1_adults.csv", encoding='cp949')
+print(df.info())
+print(df.describe())
+print(df.head(5))
+
+df['sex'] = df['sex'].str.lower().str.strip()
+df['sex'] = df['sex'].replace({
+    'male': 'male', 'm': 'male', 'man': 'male',
+    'female': 'female', 'f': 'female', 'woman': 'female',
+    'trans-female': 'female', 'trans woman': 'female',
+    'trans male': 'male', 'trans man': 'male',
+    'genderqueer': 'others', 'agender': 'others', 'non-binary': 'others',
+    'other': 'others', 'none': 'others'
+})
+df['sex'] = df['sex'].apply(lambda x: x if x in ['male', 'female'] else 'others')
+print(df.head(10))
+
+
+# Label Encoding할 컬럼 선택
+df[['education', 'occupation', 'native.country', 'workclass']] = encode_categoricals(df[['education', 'occupation', 'native.country', 'workclass']])
+onehot_cols = ['marital.status', 'relationship', 'race', 'sex', 'income']
+
+df = pd.get_dummies(df, columns=onehot_cols)
+
+
+0cc9d88 (Merge remote-tracking branch 'origin/main')
