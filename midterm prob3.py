@@ -1,4 +1,5 @@
 import pandas as pd
+import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
@@ -20,6 +21,12 @@ def prepro3(input_file):
     #print(df['longitude'].value_counts())
     #null_ratio = (df.isnull().sum() / len(df)) * 100
     df['id'] = df['id'].drop_duplicates()
+    #열 관계 활용
+    df['name'] = df['name'].fillna(df.groupby('id')['name'].transform('first'))
+    df['host_name'] = df['host_name'].fillna(df.groupby('id')['host_name'].transform('first'))
+
+
+    print(df)
 
     handle_missing(df)
 
