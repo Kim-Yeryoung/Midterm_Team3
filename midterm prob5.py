@@ -156,6 +156,15 @@ def some_function(input_file):
     # 4. 수비 능력 평균
     df['defending_ability'] = (df['defending'] + df['physic']) / 2
 
+        # 1. 몸값 대비 주급 비율
+    df['value_to_wage_ratio'] = df['value_eur'] / df['wage_eur']
+
+    # 2. 바이아웃/시장가치 비율
+    df['release_clause_ratio'] = df['release_clause_eur'] / df['value_eur']
+
+    # 3. 연봉 (주급 × 52주)
+    df['annual_wage'] = df['wage_eur'] * 52
+
  
     return df
 
