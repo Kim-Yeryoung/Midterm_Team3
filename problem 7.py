@@ -14,7 +14,10 @@ def full_preprocess(df):
 
     ## 3. 수치형 데이터 변환 및 이상치 제거
     df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
-    df = df[(df['Age'] >= 0) & (df['Age'] <= 100)]  # 나이 0~100 사이만
+    df = df[(df['Age'] >= 0) & (df['Age'] <= 100)]
+
+
+
 
     ## 4. 이진화 (Label 및 Gender)
     if 'No-show' in df.columns:
