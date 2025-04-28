@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 
 # 사용자 정의 함수 prepro -> 전체 전처리 과정 포괄
-def some_function(input_file):
+def prepro3(input_file):
 
     # 파일 읽고 df로 저장
     df_raw = pd.read_csv(input_file)
@@ -23,14 +23,14 @@ def some_function(input_file):
     df['host_name'] = df['host_name'].fillna(df.groupby('host_id')['host_name'].transform('first'))
 
     # neighbourhood_group열 one-hot encoding
-    df['neighbourhood_group'] = pd.get_dummies(df['neighbourhood_group'])
+    df = pd.concat([df, pd.get_dummies(df['neighbourhood_group'], prefix='neighbourhood_group')], axis=1)
 
     # room_type열 각 등급별 숫자 배당해서 범주형 -> 수치형 데이터 변환
     df['room_type'] = df['room_type'].map({'Shared room': 1, 'Private room': 2, 'Entire home/apt': 3})
 
     # 파생 변수로 문제에서 구하고자 하는 열 생성 -> 예약가능성, 수익성
     scaler = MinMaxScaler()
-    df['reserv_ava'] = scaler.fit_transform(df['availability_365']) # minmax scaler 정규화 #예약 가능한 날짜 수를 백분율처럼 변환함
+    df['reserv_ava'] = scaler.fit_transform(df[['availability_365']]) # minmax scaler 정규화 #예약 가능한 날짜 수를 백분율처럼 변환함
     df['profitability'] = df['price'] * df['minimum_nights'] * df['room_type'] #수익성은 가격, 최소 숙박일, 객실 등급을 곱해 계산
 
     # 지역별 예약가능성, 지역별 수익성 계산
@@ -47,6 +47,5 @@ def some_function(input_file):
 
 # 최종 파일 input, output
 input_file = "3_AB.csv"
-output_file = some_function(input_file)
-#output_file.to_csv('output_file.csv', index = False)
+output_file = prepro3(input_file)
 
