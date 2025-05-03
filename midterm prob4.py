@@ -56,7 +56,7 @@ def some_function(input_file):
         return df
 
     # 지역 컬럼 전처리 실행
-    df = some_function(input_file) 
+    df = preprocess_neighbourhood(input_file) 
 
 
     return df
